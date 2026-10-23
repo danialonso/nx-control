@@ -1,8 +1,8 @@
 {
   "name": "nxcontrol",
-  "title_id": "0x4200000000004e58",
-  "title_id_range_min": "0x4200000000004e58",
-  "title_id_range_max": "0x4200000000004e58",
+  "program_id": "0x4200000000004e58",
+  "program_id_range_min": "0x4200000000004e58",
+  "program_id_range_max": "0x4200000000004e58",
   "main_thread_stack_size": "0x10000",
   "main_thread_priority": 49,
   "default_cpu_id": 3,
@@ -102,8 +102,11 @@
       "type": "debug_flags",
       "value": {
         "allow_debug": false,
+        "force_debug_prod": false,
         "force_debug": true
       }
     }
-  ]
+  ],
+  "signature_key_generation": 0,
+  "prevent_code_reads": false
 }

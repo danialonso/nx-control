@@ -24,7 +24,7 @@ ARCH     := -march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 CFLAGS   := -g -Wall -O2 -ffunction-sections $(ARCH) $(DEFINES) -D__SWITCH__ \
             -DNXC_VERSION=\"$(APP_VERSION)\" -DJSON_NOEXCEPTION 
 CFLAGS   += $(INCLUDE)
-CXXFLAGS := $(CFLAGS) -std=gnu++20 -fno-rtti -fno-exceptions
+CXXFLAGS := $(CFLAGS) -std=gnu++20 -fno-exceptions
 ASFLAGS  := -g $(ARCH)
 LDFLAGS   = -specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 LIBS     := -lnx
