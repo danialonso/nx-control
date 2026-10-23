@@ -1,0 +1,46 @@
+grant_time:
+  fields:
+    profile_id:
+      required: true
+      selector:
+        text:
+    minutes:
+      required: true
+      default: 15
+      selector:
+        number:
+          min: 1
+          max: 600
+          unit_of_measurement: min
+    console_id:
+      selector:
+        text:
+
+approve_request:
+  fields:
+    request_id:
+      required: true
+      selector:
+        text:
+    minutes:
+      selector:
+        number:
+          min: 1
+          max: 600
+          unit_of_measurement: min
+    console_id:
+      selector:
+        text:
+
+deny_request:
+  fields:
+    request_id:
+      required: true
+      selector:
+        text:
+    message:
+      selector:
+        text:
+    console_id:
+      selector:
+        text:

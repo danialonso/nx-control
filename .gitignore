@@ -1,0 +1,16 @@
+build/
+dist/
+external/
+*.elf
+*.nso
+*.nsp
+*.npdm
+*.nro
+*.ovl
+*.nacp
+*.lst
+*.map
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/

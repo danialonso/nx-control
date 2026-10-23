@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "pin_hash": "",
+  "language": "auto",
+  "network": { "enabled": true, "port": 8460 },
+  "defaults": {
+    "warnings_minutes": [15, 5, 1],
+    "grace_seconds": 60,
+    "close_after_minutes": 0
+  },
+  "profiles": []
+}

@@ -1,0 +1,129 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "NX Control",
+        "description": "Introduce la dirección IP de tu Nintendo Switch.",
+        "data": {
+          "host": "Host",
+          "port": "Puerto"
+        }
+      },
+      "discovery_confirm": {
+        "title": "NX Control",
+        "description": "Se ha encontrado NX Control en {name}. ¿Quieres añadirlo?"
+      },
+      "pair": {
+        "title": "Vincular con {name}",
+        "description": "En la consola, abre NX Control → Red → Vincular dispositivo e introduce el código que aparece.",
+        "data": {
+          "code": "Código de vinculación"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No se puede conectar. Comprueba que la consola está encendida y en la misma red.",
+      "invalid_code": "Código no válido o caducado."
+    },
+    "abort": {
+      "already_configured": "Esta consola ya está configurada.",
+      "cannot_connect": "No se puede conectar con la consola.",
+      "not_supported": "Dispositivo no compatible."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "current_game": {
+        "name": "Juego actual"
+      },
+      "pending_requests": {
+        "name": "Solicitudes de tiempo pendientes"
+      },
+      "used_today": {
+        "name": "{profile} jugado hoy"
+      },
+      "remaining_today": {
+        "name": "{profile} tiempo restante"
+      },
+      "profile_state": {
+        "name": "{profile} estado",
+        "state": {
+          "idle": "Inactivo",
+          "playing": "Jugando",
+          "warning": "Queda poco tiempo",
+          "grace": "Tiempo de gracia",
+          "exhausted": "Tiempo agotado",
+          "outside_window": "Fuera de horario",
+          "blocked": "Bloqueado"
+        }
+      }
+    },
+    "button": {
+      "grant_time": {
+        "name": "{profile} +{minutes} min"
+      }
+    },
+    "switch": {
+      "console_lock": {
+        "name": "Bloqueo de consola"
+      }
+    }
+  },
+  "services": {
+    "grant_time": {
+      "name": "Conceder tiempo",
+      "description": "Añade tiempo de juego extra para hoy.",
+      "fields": {
+        "profile_id": {
+          "name": "ID de perfil",
+          "description": "ID del usuario de la consola."
+        },
+        "minutes": {
+          "name": "Minutos",
+          "description": "Minutos a añadir."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Solo necesario con varias consolas."
+        }
+      }
+    },
+    "approve_request": {
+      "name": "Aprobar solicitud de tiempo",
+      "description": "Aprueba una solicitud de tiempo pendiente.",
+      "fields": {
+        "request_id": {
+          "name": "ID de solicitud",
+          "description": "Del evento nx_control_time_request."
+        },
+        "minutes": {
+          "name": "Minutos",
+          "description": "Sustituye los minutos solicitados."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Solo necesario con varias consolas."
+        }
+      }
+    },
+    "deny_request": {
+      "name": "Denegar solicitud de tiempo",
+      "description": "Deniega una solicitud de tiempo pendiente.",
+      "fields": {
+        "request_id": {
+          "name": "ID de solicitud",
+          "description": "Del evento nx_control_time_request."
+        },
+        "message": {
+          "name": "Mensaje",
+          "description": "Se muestra en la consola."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Solo necesario con varias consolas."
+        }
+      }
+    }
+  }
+}

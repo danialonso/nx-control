@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "pin_hash": "",
+  "language": "es",
+  "network": { "enabled": true, "port": 8460 },
+  "defaults": { "warnings_minutes": [15, 5, 1], "grace_seconds": 60, "close_after_minutes": 0 },
+  "profiles": [
+    {
+      "user_id": "00000000000000000000000000000000",
+      "name": "Lucas",
+      "mode": "supervised",
+      "rules": {
+        "daily_minutes": { "mon": 60, "tue": 60, "wed": 60, "thu": 60, "fri": 90, "sat": 120, "sun": 120 },
+        "allowed_windows": [
+          { "days": ["mon", "tue", "wed", "thu", "fri"], "from": "17:00", "to": "20:30" },
+          { "days": ["sat", "sun"], "from": "09:00", "to": "21:00" }
+        ],
+        "warnings_minutes": [15, 5, 1],
+        "grace_seconds": 60,
+        "close_after_minutes": 0
+      }
+    },
+    {
+      "user_id": "11111111111111111111111111111111",
+      "name": "Daniel",
+      "mode": "analytics",
+      "rules": {}
+    }
+  ]
+}

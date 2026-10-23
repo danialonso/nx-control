@@ -1,0 +1,129 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "NX Control",
+        "description": "Enter the IP address of your Nintendo Switch.",
+        "data": {
+          "host": "Host",
+          "port": "Port"
+        }
+      },
+      "discovery_confirm": {
+        "title": "NX Control",
+        "description": "NX Control was found on {name}. Do you want to add it?"
+      },
+      "pair": {
+        "title": "Pair with {name}",
+        "description": "On the console, open NX Control → Network → Pair device and enter the code shown.",
+        "data": {
+          "code": "Pairing code"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect. Make sure the console is on and connected to the same network.",
+      "invalid_code": "Invalid or expired code."
+    },
+    "abort": {
+      "already_configured": "This console is already configured.",
+      "cannot_connect": "Cannot connect to the console.",
+      "not_supported": "Unsupported device."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "current_game": {
+        "name": "Current game"
+      },
+      "pending_requests": {
+        "name": "Pending time requests"
+      },
+      "used_today": {
+        "name": "{profile} played today"
+      },
+      "remaining_today": {
+        "name": "{profile} time remaining"
+      },
+      "profile_state": {
+        "name": "{profile} status",
+        "state": {
+          "idle": "Idle",
+          "playing": "Playing",
+          "warning": "Almost out of time",
+          "grace": "Grace period",
+          "exhausted": "Time is up",
+          "outside_window": "Outside allowed hours",
+          "blocked": "Blocked"
+        }
+      }
+    },
+    "button": {
+      "grant_time": {
+        "name": "{profile} +{minutes} min"
+      }
+    },
+    "switch": {
+      "console_lock": {
+        "name": "Console lock"
+      }
+    }
+  },
+  "services": {
+    "grant_time": {
+      "name": "Grant time",
+      "description": "Add extra play time for today.",
+      "fields": {
+        "profile_id": {
+          "name": "Profile ID",
+          "description": "Console user ID."
+        },
+        "minutes": {
+          "name": "Minutes",
+          "description": "Minutes to add."
+        },
+        "console_id": {
+          "name": "Console",
+          "description": "Only needed with several consoles."
+        }
+      }
+    },
+    "approve_request": {
+      "name": "Approve time request",
+      "description": "Approve a pending time request.",
+      "fields": {
+        "request_id": {
+          "name": "Request ID",
+          "description": "From the nx_control_time_request event."
+        },
+        "minutes": {
+          "name": "Minutes",
+          "description": "Override the requested minutes."
+        },
+        "console_id": {
+          "name": "Console",
+          "description": "Only needed with several consoles."
+        }
+      }
+    },
+    "deny_request": {
+      "name": "Deny time request",
+      "description": "Deny a pending time request.",
+      "fields": {
+        "request_id": {
+          "name": "Request ID",
+          "description": "From the nx_control_time_request event."
+        },
+        "message": {
+          "name": "Message",
+          "description": "Shown on the console."
+        },
+        "console_id": {
+          "name": "Console",
+          "description": "Only needed with several consoles."
+        }
+      }
+    }
+  }
+}
