@@ -1,65 +1,36 @@
-// NX Control - app (temporary console UI; the Borealis UI replaces it)
-#include <switch.h>
-#include <nlohmann/json.hpp>
-#include <cstdio>
-#include <string>
+// NX Control - configuration app
+#include <borealis.hpp>
+#include <cstdlib>
+#include "nxc_data.hpp"
+#include "nxc_i18n.hpp"
+#include "nxc_ui.hpp"
 
-using nlohmann::json;
+int main(int argc, char* argv[]) {
+    nxc::initLanguage();
 
-static json readState() {
-    FILE *f = std::fopen("sdmc:/config/nxcontrol/state.json", "rb");
-    if (!f) return json();
-    std::string text;
-    char buf[1024]; size_t n;
-    while ((n = std::fread(buf, 1, sizeof(buf), f)) > 0) text.append(buf, n);
-    std::fclose(f);
-    return json::parse(text, nullptr, false);
-}
-
-static void printUsers() {
-    if (R_FAILED(accountInitialize(AccountServiceType_Application))) return;
-    AccountUid uids[ACC_USER_LIST_SIZE];
-    s32 count = 0;
-    if (R_SUCCEEDED(accountListAllUsers(uids, ACC_USER_LIST_SIZE, &count))) {
-        std::printf("\nConsole users (use these IDs in config.json):\n");
-        for (s32 i = 0; i < count; i++) {
-            AccountProfile profile;
-            AccountProfileBase base = {};
-            if (R_SUCCEEDED(accountGetProfile(&profile, uids[i]))) {
-                accountProfileGet(&profile, nullptr, &base);
-                accountProfileClose(&profile);
-            }
-            std::printf("  %-20s %016lx%016lx\n", base.nickname, uids[i].uid[0], uids[i].uid[1]);
-        }
+    brls::Platform::APP_LOCALE_DEFAULT = brls::LOCALE_AUTO;
+    if (!brls::Application::init()) {
+        brls::Logger::error("Unable to init Borealis application");
+        return EXIT_FAILURE;
     }
-    accountExit();
-}
+    brls::Application::createWindow("NX Control");
+    brls::Application::getPlatform()->setThemeVariant(brls::ThemeVariant::DARK);
+    brls::Application::setGlobalQuit(true);
 
-int main(int, char **) {
-    consoleInit(nullptr);
-    padConfigureInput(1, HidNpadStyleSet_NpadStandard);
-    PadState pad;
-    padInitializeDefault(&pad);
+    nxc::ConfigStore::get().load();
+    bool firstRun = !nxc::ConfigStore::get().hasPin();
 
-    std::printf("NX Control %s\n\n", NXC_VERSION);
-    json s = readState();
-    if (s.is_discarded() || !s.is_object()) {
-        std::printf("The NX Control service is not running.\nReboot the console after installing.\n");
+    // Without a PIN there is nothing to protect yet.
+    nxc::ui::setUnlocked(firstRun);
+    nxc::ui::showMain();
+
+    if (firstRun) {
+        nxc::ui::showWelcome();
     } else {
-        std::printf("Service running (%s)\n\nProfiles:\n", s.value("version", std::string("?")).c_str());
-        for (const auto &p : s["profiles"])
-            std::printf("  %-16s used %4llds  remaining %6llds\n",
-                        p.value("name", std::string("-")).c_str(),
-                        p.value("used_today", 0LL), p.value("remaining_today", -1LL));
+        brls::sync([] { nxc::ui::askPin(nullptr); });
     }
-    printUsers();
-    std::printf("\nPress + to exit.\n");
 
-    while (appletMainLoop()) {
-        padUpdate(&pad);
-        if (padGetButtonsDown(&pad) & HidNpadButton_Plus) break;
-        consoleUpdate(nullptr);
-    }
-    consoleExit(nullptr);
-    return 0;
+    while (brls::Application::mainLoop())
+        ;
+    return EXIT_SUCCESS;
 }

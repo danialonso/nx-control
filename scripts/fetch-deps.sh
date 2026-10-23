@@ -16,4 +16,10 @@ if [ ! -d external/libtesla ]; then
   git clone --depth 1 https://github.com/WerWolv/libtesla.git external/libtesla
 fi
 
+# Borealis (UI library of the NX Control app)
+if [ ! -d external/borealis ]; then
+  git clone --depth 1 --branch wiliwili --recursive --shallow-submodules \
+    https://github.com/xfangfang/borealis.git external/borealis
+fi
+
 echo "Dependencies ready."

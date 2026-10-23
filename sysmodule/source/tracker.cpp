@@ -86,6 +86,19 @@ Foreground Tracker::poll() {
                    programIdToString(current_program_).c_str(), user_.c_str());
     }
 
+    // The user can be picked after the game starts (or the last opened user may be stale
+    // right after boot), so keep it up to date while the game is running.
+    if (now_check_user_++ % 3 == 0) {
+        AccountUid uid = {};
+        if (R_SUCCEEDED(accountGetLastOpenedUser(&uid)) && accountUidIsValid(&uid)) {
+            std::string u = uidToString(uid);
+            if (u != user_) {
+                log::debug("active user changed to %s", u.c_str());
+                user_ = u;
+            }
+        }
+    }
+
     readFocusEvents();
 
     fg.running    = true;

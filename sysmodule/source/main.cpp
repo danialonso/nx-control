@@ -3,6 +3,7 @@
 #include <nlohmann/json.hpp>
 #include <cstdio>
 #include <set>
+#include <sys/stat.h>
 #include "common.hpp"
 #include "config.hpp"
 #include "engine.hpp"
@@ -183,6 +184,12 @@ int main(int, char **) {
     PlayState last_state = PlayState::Idle;
     bool last_focused = false;
 
+    // Config hot reload: the app writes config.json, the service picks it up within ~2 s.
+    struct stat cfg_st = {};
+    time_t cfg_mtime = stat(kConfigPath, &cfg_st) == 0 ? cfg_st.st_mtime : 0;
+    off_t  cfg_size  = cfg_mtime ? cfg_st.st_size : 0;
+    u64 last_cfg_check = 0;
+
     while (true) {
         svcSleepThread(kTickNs);
 
@@ -203,6 +210,19 @@ int main(int, char **) {
         last_wall = now.posix;
 
         if (now.valid && now.date != rt.store.date()) rt.store.rollover(now.date);
+
+        if (now_ns - last_cfg_check > 2'000'000'000ULL) {
+            last_cfg_check = now_ns;
+            if (stat(kConfigPath, &cfg_st) == 0 && (cfg_st.st_mtime != cfg_mtime || cfg_st.st_size != cfg_size)) {
+                cfg_mtime = cfg_st.st_mtime;
+                cfg_size  = cfg_st.st_size;
+                rt.config.load();
+                rt.warned.clear();
+                rt.grace_until = 0;
+                rt.suspended_since = 0;
+                log::event("CONFIG", "reloaded (%u profiles)", (unsigned)rt.config.profiles.size());
+            }
+        }
 
         Foreground fg = rt.tracker.poll();
 

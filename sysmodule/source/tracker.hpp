@@ -27,6 +27,7 @@ private:
     u64  current_program_ = 0;
     bool focused_ = false;
     std::string user_;
+    u32 now_check_user_ = 0;
 };
 
 } // namespace nxc
