@@ -12,8 +12,75 @@ namespace {
 
 constexpr const char *kStatePath = "sdmc:/config/nxcontrol/state.json";
 
+// ------------------------------------------------------------------ texts
+// One column per language: English, Spanish, French, German, Italian, Portuguese.
+struct Text { const char *key; const char *t[6]; };
+const Text kTexts[] = {
+    {"unlimited",  {"Unlimited", "Sin límite", "Illimité", "Unbegrenzt", "Illimitato", "Sem limite"}},
+    {"today",      {"Today", "Hoy", "Aujourd'hui", "Heute", "Oggi", "Hoje"}},
+    {"profile",    {"Profile", "Perfil", "Profil", "Profil", "Profilo", "Perfil"}},
+    {"remaining",  {"Time remaining", "Tiempo restante", "Temps restant", "Verbleibende Zeit", "Tempo rimanente", "Tempo restante"}},
+    {"played",     {"Played today", "Jugado hoy", "Joué aujourd'hui", "Heute gespielt", "Giocato oggi", "Jogado hoje"}},
+    {"status",     {"Status", "Estado", "État", "Status", "Stato", "Estado"}},
+    {"more_time",  {"Need more time?", "¿Necesitas más tiempo?", "Besoin de plus de temps ?", "Mehr Zeit nötig?",
+                    "Ti serve più tempo?", "Precisa de mais tempo?"}},
+    {"request",    {"Request", "Solicitud", "Demande", "Anfrage", "Richiesta", "Pedido"}},
+    {"ask",        {"Ask for %d more minutes", "Pedir %d minutos más", "Demander %d minutes de plus", "Um %d Minuten mehr bitten",
+                    "Chiedi %d minuti in più", "Pedir mais %d minutos"}},
+    {"no_game",    {"No game running", "Ningún juego abierto", "Aucun jeu ouvert", "Kein Spiel geöffnet", "Nessun gioco aperto",
+                    "Nenhum jogo aberto"}},
+    {"sent",       {"Sent, waiting...", "Enviada, esperando...", "Envoyée, en attente...", "Gesendet, warte...", "Inviata, in attesa...",
+                    "Enviado, a aguardar..."}},
+    {"not_sent",   {"Could not send", "No se pudo enviar", "Envoi impossible", "Senden fehlgeschlagen", "Impossibile inviare",
+                    "Não foi possível enviar"}},
+    {"no_service", {"Service not running", "El servicio no está en marcha", "Le service ne fonctionne pas", "Dienst läuft nicht",
+                    "Servizio non in esecuzione", "O serviço não está em execução"}},
+    {"waiting",    {"Waiting", "Esperando", "En attente", "Wartet", "In attesa", "A aguardar"}},
+    {"approved",   {"Approved", "Aprobada", "Acceptée", "Genehmigt", "Approvata", "Aprovado"}},
+    {"denied",     {"Denied", "Denegada", "Refusée", "Abgelehnt", "Rifiutata", "Recusado"}},
+    {"not_config", {"Not configured", "Sin configurar", "Non configuré", "Nicht eingerichtet", "Non configurato", "Não configurado"}},
+    {"st_idle",    {"Idle", "Inactivo", "Inactif", "Inaktiv", "Inattivo", "Inativo"}},
+    {"st_playing", {"Playing", "Jugando", "En jeu", "Spielt", "In gioco", "A jogar"}},
+    {"st_warning", {"Almost out of time", "Queda poco tiempo", "Bientôt plus de temps", "Zeit fast abgelaufen", "Tempo quasi finito",
+                    "Resta pouco tempo"}},
+    {"st_grace",   {"Grace period", "Tiempo de gracia", "Délai de grâce", "Nachfrist", "Periodo di tolleranza", "Tempo de tolerância"}},
+    {"st_exhausted", {"Time is up", "Se acabó el tiempo", "Temps écoulé", "Zeit abgelaufen", "Tempo scaduto", "O tempo acabou"}},
+    {"st_outside_window", {"Outside allowed hours", "Fuera del horario permitido", "En dehors des horaires autorisés",
+                    "Außerhalb der erlaubten Zeiten", "Fuori dall'orario consentito", "Fora do horário permitido"}},
+    {"st_blocked", {"Blocked", "Bloqueado", "Bloqué", "Gesperrt", "Bloccato", "Bloqueado"}},
+};
+
+int language() {
+    static int lang = -1;
+    if (lang < 0) {
+        lang = 0;
+        u64 code = 0;
+        SetLanguage l = SetLanguage_ENUS;
+        if (R_SUCCEEDED(setInitialize())) {
+            if (R_SUCCEEDED(setGetSystemLanguage(&code)) && R_SUCCEEDED(setMakeLanguage(code, &l))) {
+                switch (l) {
+                    case SetLanguage_ES: case SetLanguage_ES419: lang = 1; break;
+                    case SetLanguage_FR: case SetLanguage_FRCA:  lang = 2; break;
+                    case SetLanguage_DE:                         lang = 3; break;
+                    case SetLanguage_IT:                         lang = 4; break;
+                    case SetLanguage_PT: case SetLanguage_PTBR:  lang = 5; break;
+                    default: break;
+                }
+            }
+            setExit();
+        }
+    }
+    return lang;
+}
+
+std::string T(const std::string &key) {
+    for (const auto &e : kTexts)
+        if (key == e.key) return e.t[language()];
+    return std::string();
+}
+
 std::string formatDuration(long long seconds) {
-    if (seconds < 0) return "Unlimited";
+    if (seconds < 0) return T("unlimited");
     char buf[32];
     if (seconds >= 3600) std::snprintf(buf, sizeof(buf), "%lldh %02lldm", seconds / 3600, (seconds % 3600) / 60);
     else                 std::snprintf(buf, sizeof(buf), "%lldm %02llds", seconds / 60, seconds % 60);
@@ -36,21 +103,23 @@ public:
         auto frame = new tsl::elm::OverlayFrame("NX Control", NXC_VERSION);
         auto list  = new tsl::elm::List();
 
-        list->addItem(new tsl::elm::CategoryHeader("Today"));
-        profile_   = new tsl::elm::ListItem("Profile", "-");
-        remaining_ = new tsl::elm::ListItem("Time remaining", "-");
-        used_      = new tsl::elm::ListItem("Played today", "-");
-        status_    = new tsl::elm::ListItem("Status", "-");
+        list->addItem(new tsl::elm::CategoryHeader(T("today")));
+        profile_   = new tsl::elm::ListItem(T("profile"), "-");
+        remaining_ = new tsl::elm::ListItem(T("remaining"), "-");
+        used_      = new tsl::elm::ListItem(T("played"), "-");
+        status_    = new tsl::elm::ListItem(T("status"), "-");
         list->addItem(profile_);
         list->addItem(remaining_);
         list->addItem(used_);
         list->addItem(status_);
 
-        list->addItem(new tsl::elm::CategoryHeader("Need more time?"));
-        request_ = new tsl::elm::ListItem("Request", "-");
+        list->addItem(new tsl::elm::CategoryHeader(T("more_time")));
+        request_ = new tsl::elm::ListItem(T("request"), "-");
         list->addItem(request_);
         for (int minutes : {15, 30, 60}) {
-            auto item = new tsl::elm::ListItem("Ask for " + std::to_string(minutes) + " more minutes");
+            char label[96];
+            std::snprintf(label, sizeof(label), T("ask").c_str(), minutes);
+            auto item = new tsl::elm::ListItem(label);
             item->setClickListener([this, minutes](u64 keys) {
                 if (!(keys & HidNpadButton_A)) return false;
                 sendRequest(minutes);
@@ -72,7 +141,7 @@ private:
     // The service picks up files from the inbox folder within a second.
     void sendRequest(int minutes) {
         if (profile_id_.empty()) {
-            request_->setValue("No game running");
+            request_->setValue(T("no_game"));
             return;
         }
         json cmd = {{"type", "request"}, {"profile_id", profile_id_}, {"seconds", minutes * 60}};
@@ -84,16 +153,16 @@ private:
             std::fwrite(out.data(), 1, out.size(), f);
             std::fclose(f);
             std::rename(tmp.c_str(), final_path.c_str());
-            request_->setValue("Sent, waiting...");
+            request_->setValue(T("sent"));
         } else {
-            request_->setValue("Could not send");
+            request_->setValue(T("not_sent"));
         }
     }
 
     void refresh() {
         json s = readState();
         if (s.is_discarded() || !s.is_object()) {
-            status_->setValue("Service not running");
+            status_->setValue(T("no_service"));
             return;
         }
         const json &session = s["session"];
@@ -105,12 +174,16 @@ private:
                 if (r.value("profile_id", std::string()) == pid) {
                     std::string st = r.value("status", std::string());
                     long long mins = r.value("seconds", 0LL) / 60;
-                    if (st == "pending") req = "Waiting (" + std::to_string(mins) + " min)";
-                    else if (st == "approved") req = "Approved (+" + std::to_string(mins) + " min)";
-                    else if (st == "denied") req = "Denied";
+                    if (st == "pending") req = T("waiting") + " (" + std::to_string(mins) + " min)";
+                    else if (st == "approved") req = T("approved") + " (+" + std::to_string(mins) + " min)";
+                    else if (st == "denied") req = T("denied");
                 }
         request_->setValue(req);
-        status_->setValue(session.value("state", std::string("idle")));
+        {
+            std::string st = session.value("state", std::string("idle"));
+            std::string text = T("st_" + st);
+            status_->setValue(text.empty() ? st : text);
+        }
 
         for (const auto &p : s["profiles"]) {
             if (p.value("id", std::string()) != pid) continue;
@@ -119,7 +192,7 @@ private:
             used_->setValue(formatDuration(p.value("used_today", 0LL)));
             return;
         }
-        profile_->setValue(pid.empty() ? "No game running" : "Not configured");
+        profile_->setValue(pid.empty() ? T("no_game") : T("not_config"));
         remaining_->setValue("-");
         used_->setValue("-");
     }

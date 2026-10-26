@@ -1,0 +1,184 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "NX Control",
+        "description": "Inserisci l'indirizzo della console. Lo trovi in NX Control → Impostazioni → Configura Home Assistant.",
+        "data": {
+          "host": "Host",
+          "port": "Porta"
+        }
+      },
+      "discovery_confirm": {
+        "title": "NX Control",
+        "description": "NX Control è stato trovato su {name}. Vuoi aggiungerlo?"
+      },
+      "pair": {
+        "title": "Abbina con {name}",
+        "description": "Sulla console, apri NX Control → Impostazioni → Configura Home Assistant → Crea codice di abbinamento e inserisci qui il codice di 6 cifre.",
+        "data": {
+          "code": "Codice di abbinamento"
+        }
+      },
+      "reconfigure": {
+        "title": "Indirizzo della console",
+        "description": "Inserisci il nuovo indirizzo IP della console (mostrato in NX Control → Diagnostica → Rete locale).",
+        "data": {
+          "host": "Host",
+          "port": "Porta"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossibile connettersi. Assicurati che la console sia accesa e connessa alla stessa rete.",
+      "invalid_code": "Codice non valido o scaduto.",
+      "too_many_attempts": "Troppi tentativi. Attendi un minuto e crea un nuovo codice.",
+      "wrong_console": "Questa è un'altra console."
+    },
+    "abort": {
+      "already_configured": "Questa console è già configurata.",
+      "cannot_connect": "Impossibile connettersi alla console.",
+      "not_supported": "Dispositivo non supportato.",
+      "reconfigure_successful": "L'indirizzo della console è stato aggiornato."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "current_game": {
+        "name": "Gioco attuale"
+      },
+      "pending_requests": {
+        "name": "Richieste di tempo in sospeso"
+      },
+      "used_today": {
+        "name": "{profile} ha giocato oggi"
+      },
+      "remaining_today": {
+        "name": "Tempo rimanente di {profile}"
+      },
+      "profile_state": {
+        "name": "Stato di {profile}",
+        "state": {
+          "idle": "Inattivo",
+          "playing": "In gioco",
+          "warning": "Tempo quasi finito",
+          "grace": "Periodo di tolleranza",
+          "exhausted": "Tempo scaduto",
+          "outside_window": "Fuori dall'orario consentito",
+          "blocked": "Bloccato",
+          "offline": "Console spenta"
+        }
+      }
+    },
+    "button": {
+      "grant_time": {
+        "name": "{profile} +{minutes} min"
+      }
+    },
+    "switch": {
+      "console_lock": {
+        "name": "Blocco della console"
+      },
+      "profile_block": {
+        "name": "Blocca {profile} oggi"
+      }
+    },
+    "binary_sensor": {
+      "playing": {
+        "name": "{profile} sta giocando"
+      },
+      "online": {
+        "name": "Console accesa"
+      }
+    }
+  },
+  "services": {
+    "grant_time": {
+      "name": "Concedi tempo",
+      "description": "Aggiunge tempo di gioco extra per oggi.",
+      "fields": {
+        "profile_id": {
+          "name": "ID profilo",
+          "description": "ID dell'utente della console."
+        },
+        "minutes": {
+          "name": "Minuti",
+          "description": "Minuti da aggiungere."
+        },
+        "console_id": {
+          "name": "Console",
+          "description": "Necessario solo con più console."
+        }
+      }
+    },
+    "approve_request": {
+      "name": "Approva richiesta di tempo",
+      "description": "Approva una richiesta di tempo in sospeso.",
+      "fields": {
+        "request_id": {
+          "name": "ID richiesta",
+          "description": "Dall'evento nx_control_time_request."
+        },
+        "minutes": {
+          "name": "Minuti",
+          "description": "Sostituisce i minuti richiesti."
+        },
+        "console_id": {
+          "name": "Console",
+          "description": "Necessario solo con più console."
+        }
+      }
+    },
+    "deny_request": {
+      "name": "Rifiuta richiesta di tempo",
+      "description": "Rifiuta una richiesta di tempo in sospeso.",
+      "fields": {
+        "request_id": {
+          "name": "ID richiesta",
+          "description": "Dall'evento nx_control_time_request."
+        },
+        "message": {
+          "name": "Messaggio",
+          "description": "Mostrato sulla console."
+        },
+        "console_id": {
+          "name": "Console",
+          "description": "Necessario solo con più console."
+        }
+      }
+    },
+    "block_profile": {
+      "name": "Blocca profilo",
+      "description": "Blocca un profilo per alcuni minuti o fino alla fine della giornata.",
+      "fields": {
+        "profile_id": {
+          "name": "ID profilo",
+          "description": "ID dell'utente della console."
+        },
+        "console_id": {
+          "name": "Console",
+          "description": "Necessario solo con più console."
+        },
+        "minutes": {
+          "name": "Minuti",
+          "description": "Lascia vuoto per bloccare fino alla fine della giornata."
+        }
+      }
+    },
+    "unblock_profile": {
+      "name": "Sblocca profilo",
+      "description": "Rimuove il blocco di un profilo.",
+      "fields": {
+        "profile_id": {
+          "name": "ID profilo",
+          "description": "ID dell'utente della console."
+        },
+        "console_id": {
+          "name": "Console",
+          "description": "Necessario solo con più console."
+        }
+      }
+    }
+  }
+}

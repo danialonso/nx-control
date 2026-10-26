@@ -1,0 +1,184 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "NX Control",
+        "description": "Introduza o endereço da consola. Encontra-o em NX Control → Definições → Configurar o Home Assistant.",
+        "data": {
+          "host": "Anfitrião",
+          "port": "Porta"
+        }
+      },
+      "discovery_confirm": {
+        "title": "NX Control",
+        "description": "O NX Control foi encontrado em {name}. Quer adicioná-lo?"
+      },
+      "pair": {
+        "title": "Emparelhar com {name}",
+        "description": "Na consola, abra NX Control → Definições → Configurar o Home Assistant → Criar código de emparelhamento e introduza aqui o código de 6 dígitos.",
+        "data": {
+          "code": "Código de emparelhamento"
+        }
+      },
+      "reconfigure": {
+        "title": "Endereço da consola",
+        "description": "Introduza o novo endereço IP da consola (indicado em NX Control → Diagnóstico → Rede local).",
+        "data": {
+          "host": "Anfitrião",
+          "port": "Porta"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Não é possível ligar. Verifique se a consola está ligada e na mesma rede.",
+      "invalid_code": "Código inválido ou expirado.",
+      "too_many_attempts": "Demasiadas tentativas. Aguarde um minuto e crie um novo código.",
+      "wrong_console": "Esta é uma consola diferente."
+    },
+    "abort": {
+      "already_configured": "Esta consola já está configurada.",
+      "cannot_connect": "Não é possível ligar à consola.",
+      "not_supported": "Dispositivo não suportado.",
+      "reconfigure_successful": "O endereço da consola foi atualizado."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "current_game": {
+        "name": "Jogo atual"
+      },
+      "pending_requests": {
+        "name": "Pedidos de tempo pendentes"
+      },
+      "used_today": {
+        "name": "{profile} jogou hoje"
+      },
+      "remaining_today": {
+        "name": "Tempo restante de {profile}"
+      },
+      "profile_state": {
+        "name": "Estado de {profile}",
+        "state": {
+          "idle": "Inativo",
+          "playing": "A jogar",
+          "warning": "Resta pouco tempo",
+          "grace": "Tempo de tolerância",
+          "exhausted": "O tempo acabou",
+          "outside_window": "Fora do horário permitido",
+          "blocked": "Bloqueado",
+          "offline": "Consola desligada"
+        }
+      }
+    },
+    "button": {
+      "grant_time": {
+        "name": "{profile} +{minutes} min"
+      }
+    },
+    "switch": {
+      "console_lock": {
+        "name": "Bloqueio da consola"
+      },
+      "profile_block": {
+        "name": "Bloquear {profile} hoje"
+      }
+    },
+    "binary_sensor": {
+      "playing": {
+        "name": "{profile} a jogar"
+      },
+      "online": {
+        "name": "Consola ligada"
+      }
+    }
+  },
+  "services": {
+    "grant_time": {
+      "name": "Conceder tempo",
+      "description": "Adiciona tempo de jogo extra para hoje.",
+      "fields": {
+        "profile_id": {
+          "name": "ID do perfil",
+          "description": "ID do utilizador da consola."
+        },
+        "minutes": {
+          "name": "Minutos",
+          "description": "Minutos a adicionar."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Só é necessário com várias consolas."
+        }
+      }
+    },
+    "approve_request": {
+      "name": "Aprovar pedido de tempo",
+      "description": "Aprova um pedido de tempo pendente.",
+      "fields": {
+        "request_id": {
+          "name": "ID do pedido",
+          "description": "Do evento nx_control_time_request."
+        },
+        "minutes": {
+          "name": "Minutos",
+          "description": "Substitui os minutos pedidos."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Só é necessário com várias consolas."
+        }
+      }
+    },
+    "deny_request": {
+      "name": "Recusar pedido de tempo",
+      "description": "Recusa um pedido de tempo pendente.",
+      "fields": {
+        "request_id": {
+          "name": "ID do pedido",
+          "description": "Do evento nx_control_time_request."
+        },
+        "message": {
+          "name": "Mensagem",
+          "description": "Mostrada na consola."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Só é necessário com várias consolas."
+        }
+      }
+    },
+    "block_profile": {
+      "name": "Bloquear perfil",
+      "description": "Bloqueia um perfil durante alguns minutos ou até ao fim do dia.",
+      "fields": {
+        "profile_id": {
+          "name": "ID do perfil",
+          "description": "ID do utilizador da consola."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Só é necessário com várias consolas."
+        },
+        "minutes": {
+          "name": "Minutos",
+          "description": "Deixe vazio para bloquear até ao fim do dia."
+        }
+      }
+    },
+    "unblock_profile": {
+      "name": "Desbloquear perfil",
+      "description": "Remove o bloqueio de um perfil.",
+      "fields": {
+        "profile_id": {
+          "name": "ID do perfil",
+          "description": "ID do utilizador da consola."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Só é necessário com várias consolas."
+        }
+      }
+    }
+  }
+}
