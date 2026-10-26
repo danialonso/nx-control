@@ -14,7 +14,7 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/danialonso/nx-control/issues",
   "requirements": [],
-  "version": "0.2.2",
+  "version": "0.2.3",
   "zeroconf": [
     "_nxcontrol._tcp.local."
   ]
