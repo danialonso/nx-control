@@ -19,6 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 
 REFRESH = {"avatar": 86400, "icon": 30 * 86400}   # seconds before asking the console again
 NOT_GAMES = {"nx-hbmenu", "hbmenu", "Homebrew Menu", "NX Control"}
+RETRY_AFTER_FAILURE = 3600   # seconds before asking again for an image that failed
 
 
 def _path(hass: HomeAssistant, kind: str, console_id: str, item_id: str) -> Path:
@@ -52,8 +53,15 @@ async def async_get_image(hass: HomeAssistant, kind: str, console_id: str, item_
         return None if refresh_only else cached
     coordinator = _coordinator(hass, console_id)
     data = None
-    if coordinator is not None and (console_ok or coordinator.online):
+    failed = hass.data.setdefault("nx_control_image_failures", {})
+    key = f"{kind}_{console_id}_{item_id.lower()}"
+    recently_failed = time.time() - failed.get(key, 0) < RETRY_AFTER_FAILURE
+    if coordinator is not None and (console_ok or coordinator.online) and not recently_failed:
         data = await coordinator.client.image("icons" if kind == "icon" else "avatars", item_id)
+        if data:
+            failed.pop(key, None)
+        else:
+            failed[key] = time.time()   # do not keep asking the console for an image it cannot send
     if data:
         def _write() -> None:
             path.parent.mkdir(parents=True, exist_ok=True)
