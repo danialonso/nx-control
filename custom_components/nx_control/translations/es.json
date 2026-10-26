@@ -1,0 +1,184 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "NX Control",
+        "description": "Introduce la dirección de la consola. La encontrarás en NX Control → Ajustes → Configurar Home Assistant.",
+        "data": {
+          "host": "Host",
+          "port": "Puerto"
+        }
+      },
+      "discovery_confirm": {
+        "title": "NX Control",
+        "description": "Se ha encontrado NX Control en {name}. ¿Quieres añadirlo?"
+      },
+      "pair": {
+        "title": "Vincular con {name}",
+        "description": "En la consola, abre NX Control → Ajustes → Configurar Home Assistant → Crear código de vinculación, e introduce aquí el código de 6 cifras.",
+        "data": {
+          "code": "Código de vinculación"
+        }
+      },
+      "reconfigure": {
+        "title": "Dirección de la consola",
+        "description": "Escribe la nueva IP de la consola (la ves en NX Control → Diagnóstico → Red).",
+        "data": {
+          "host": "Host",
+          "port": "Puerto"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No se puede conectar. Comprueba que la consola está encendida y en la misma red.",
+      "invalid_code": "Código no válido o caducado.",
+      "too_many_attempts": "Demasiados intentos. Espera un minuto y crea un código nuevo.",
+      "wrong_console": "Es otra consola distinta."
+    },
+    "abort": {
+      "already_configured": "Esta consola ya está configurada.",
+      "cannot_connect": "No se puede conectar con la consola.",
+      "not_supported": "Dispositivo no compatible.",
+      "reconfigure_successful": "Se ha actualizado la dirección de la consola."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "current_game": {
+        "name": "Juego actual"
+      },
+      "pending_requests": {
+        "name": "Solicitudes de tiempo pendientes"
+      },
+      "used_today": {
+        "name": "{profile} jugado hoy"
+      },
+      "remaining_today": {
+        "name": "{profile} tiempo restante"
+      },
+      "profile_state": {
+        "name": "{profile} estado",
+        "state": {
+          "idle": "Inactivo",
+          "playing": "Jugando",
+          "warning": "Queda poco tiempo",
+          "grace": "Tiempo de gracia",
+          "exhausted": "Tiempo agotado",
+          "outside_window": "Fuera de horario",
+          "blocked": "Bloqueado",
+          "offline": "Consola apagada"
+        }
+      }
+    },
+    "button": {
+      "grant_time": {
+        "name": "{profile} +{minutes} min"
+      }
+    },
+    "switch": {
+      "console_lock": {
+        "name": "Bloqueo de consola"
+      },
+      "profile_block": {
+        "name": "Bloquear a {profile} hoy"
+      }
+    },
+    "binary_sensor": {
+      "playing": {
+        "name": "{profile} jugando"
+      },
+      "online": {
+        "name": "Consola encendida"
+      }
+    }
+  },
+  "services": {
+    "grant_time": {
+      "name": "Conceder tiempo",
+      "description": "Añade tiempo de juego extra para hoy.",
+      "fields": {
+        "profile_id": {
+          "name": "ID de perfil",
+          "description": "ID del usuario de la consola."
+        },
+        "minutes": {
+          "name": "Minutos",
+          "description": "Minutos a añadir."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Solo necesario con varias consolas."
+        }
+      }
+    },
+    "approve_request": {
+      "name": "Aprobar solicitud de tiempo",
+      "description": "Aprueba una solicitud de tiempo pendiente.",
+      "fields": {
+        "request_id": {
+          "name": "ID de solicitud",
+          "description": "Del evento nx_control_time_request."
+        },
+        "minutes": {
+          "name": "Minutos",
+          "description": "Sustituye los minutos solicitados."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Solo necesario con varias consolas."
+        }
+      }
+    },
+    "deny_request": {
+      "name": "Denegar solicitud de tiempo",
+      "description": "Deniega una solicitud de tiempo pendiente.",
+      "fields": {
+        "request_id": {
+          "name": "ID de solicitud",
+          "description": "Del evento nx_control_time_request."
+        },
+        "message": {
+          "name": "Mensaje",
+          "description": "Se muestra en la consola."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Solo necesario con varias consolas."
+        }
+      }
+    },
+    "block_profile": {
+      "name": "Bloquear perfil",
+      "description": "Bloquea un perfil unos minutos, o hasta el final del día.",
+      "fields": {
+        "profile_id": {
+          "name": "ID de perfil",
+          "description": "ID del usuario de la consola."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Solo necesario con varias consolas."
+        },
+        "minutes": {
+          "name": "Minutos",
+          "description": "Déjalo vacío para bloquear hasta el final del día."
+        }
+      }
+    },
+    "unblock_profile": {
+      "name": "Desbloquear perfil",
+      "description": "Quita el bloqueo de un perfil.",
+      "fields": {
+        "profile_id": {
+          "name": "ID de perfil",
+          "description": "ID del usuario de la consola."
+        },
+        "console_id": {
+          "name": "Consola",
+          "description": "Solo necesario con varias consolas."
+        }
+      }
+    }
+  }
+}

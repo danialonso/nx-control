@@ -1,0 +1,61 @@
+blueprint:
+  name: NX Control – Time request notification
+  description: >
+    Sends an actionable notification to your phone when someone asks for more play time
+    on the Nintendo Switch. Approve or deny directly from the notification.
+  domain: automation
+  input:
+    notify_device:
+      name: Phone
+      selector:
+        device:
+          integration: mobile_app
+
+triggers:
+  - trigger: event
+    event_type: nx_control_time_request
+    id: request
+
+actions:
+  - variables:
+      req: "{{ trigger.event.data }}"
+      approve: "NXC_APPROVE_{{ req.request_id }}"
+      deny: "NXC_DENY_{{ req.request_id }}"
+  - device_id: !input notify_device
+    domain: mobile_app
+    type: notify
+    title: "🎮 {{ req.profile_name }} asks for {{ req.minutes }} min"
+    message: "{{ req.message if req.message else 'More play time requested' }}"
+    data:
+      tag: "{{ req.request_id }}"
+      actions:
+        - action: "{{ approve }}"
+          title: "Approve"
+        - action: "{{ deny }}"
+          title: "Deny"
+  - wait_for_trigger:
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "{{ approve }}"
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "{{ deny }}"
+    timeout: "00:15:00"
+    continue_on_timeout: false
+  - if:
+      - condition: template
+        value_template: "{{ wait.trigger.event.data.action == approve }}"
+    then:
+      - action: nx_control.approve_request
+        data:
+          request_id: "{{ req.request_id }}"
+          console_id: "{{ req.console_id }}"
+    else:
+      - action: nx_control.deny_request
+        data:
+          request_id: "{{ req.request_id }}"
+          console_id: "{{ req.console_id }}"
+
+mode: parallel

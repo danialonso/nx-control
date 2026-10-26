@@ -1,0 +1,63 @@
+NX Control License
+==================
+
+Copyright (c) 2026 Daniel Alonso Sanchis. All rights reserved.
+
+This license applies to NX Control: the console software (background service and
+app), the Home Assistant integration and dashboard card, and the documentation and
+artwork. The quick panel (Tesla overlay) is the only exception: its source code is
+published in the `overlay/` folder under the GNU General Public License (see
+`overlay/LICENSE`).
+
+1. Free use
+   You may download, install and use NX Control free of charge, for personal and
+   non-commercial purposes, on any number of consoles and Home Assistant instances.
+
+2. Sharing
+   You may share copies of the official release packages (the NX Control zip, and the
+   Home Assistant integration as published in the official repository), free of
+   charge, including on websites, forums and SD-card bundles, as long as:
+   a) the files are complete and unmodified, and include this license;
+   b) you do not charge for them, sell them or include them in a paid product or
+      service;
+   c) you credit "NX Control by Daniel Alonso" and link to the official page:
+      https://github.com/danialonso/nx-control
+
+3. What is not allowed
+   Unless the author gives written permission, you may not:
+   a) modify, adapt, translate or create derivative works of NX Control, or share
+      modified versions;
+   b) reverse engineer, decompile or disassemble the console software, except to
+      the extent permitted by applicable law;
+   c) sell, rent, lend or sublicense NX Control, or use it as part of a commercial
+      product or service;
+   d) remove or change copyright notices, this license or the credits;
+   e) use the name "NX Control" or its logo for other software, or in a way that
+      suggests endorsement.
+
+4. Third-party components
+   NX Control includes third-party open-source components, each under its own
+   license. See THIRD-PARTY-NOTICES.md. Nothing in this license limits your rights
+   under those licenses.
+
+5. No warranty
+   NX Control is provided "as is", without warranty of any kind. Use it at your own
+   risk. Modifying a console with custom firmware may void its warranty.
+
+6. Limitation of liability
+   To the maximum extent permitted by law, the author is not liable for any damage
+   or loss arising from the use of, or inability to use, NX Control.
+
+7. Termination
+   This license ends automatically if you break its terms. You must then stop using
+   and sharing NX Control.
+
+NX Control is not affiliated with, endorsed or sponsored by Nintendo. Nintendo Switch
+is a trademark of Nintendo.
+
+---------------------------------------------------------------------------------
+Resumen en español (el texto en inglés es el que vale):
+NX Control es gratuito para uso personal. Puedes compartir el zip oficial, sin
+modificar, gratis y citando al autor. No está permitido modificarlo, venderlo, hacer
+ingeniería inversa ni usar su nombre o logotipo para otro software. El panel rápido
+(overlay) es la excepción: su código se publica bajo licencia GPL.

@@ -1,0 +1,59 @@
+blueprint:
+  name: NX Control – Notify when someone starts playing
+  description: >
+    Sends a notification to your phone when a profile starts playing on the
+    Nintendo Switch. Optionally, also when they stop.
+  domain: automation
+  input:
+    playing_sensor:
+      name: Profile
+      description: The "playing" sensor of the profile (e.g. binary_sensor.lucas_playing).
+      selector:
+        entity:
+          filter:
+            - integration: nx_control
+              domain: binary_sensor
+    notify_device:
+      name: Phone
+      selector:
+        device:
+          integration: mobile_app
+    notify_stop:
+      name: Also notify when they stop playing
+      default: false
+      selector:
+        boolean:
+
+triggers:
+  - trigger: state
+    entity_id: !input playing_sensor
+    from: "off"
+    to: "on"
+    id: started
+  - trigger: state
+    entity_id: !input playing_sensor
+    from: "on"
+    to: "off"
+    id: stopped
+
+variables:
+  notify_stop: !input notify_stop
+  who: "{{ state_attr(trigger.entity_id, 'friendly_name') }}"
+
+conditions:
+  - condition: template
+    value_template: "{{ trigger.id == 'started' or notify_stop }}"
+
+actions:
+  - device_id: !input notify_device
+    domain: mobile_app
+    type: notify
+    title: "🎮 Nintendo Switch"
+    message: >
+      {% if trigger.id == 'started' %}
+        {{ who }}{% if trigger.to_state.attributes.game %}: {{ trigger.to_state.attributes.game }}{% endif %}
+      {% else %}
+        {{ who }} – {{ 'stopped playing' }}
+      {% endif %}
+
+mode: queued
