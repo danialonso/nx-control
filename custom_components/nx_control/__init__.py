@@ -100,7 +100,8 @@ async def _async_register_card(hass: HomeAssistant) -> None:
         return f"{manifest.get('version', '0')}-{int(path.stat().st_mtime)}"   # cache busting
 
     version = await hass.async_add_executor_job(_version)
-    await hass.http.async_register_static_paths([StaticPathConfig(CARD_URL, str(path), True)])
+    # No browser cache, so a new version of the card shows up with a normal page reload
+    await hass.http.async_register_static_paths([StaticPathConfig(CARD_URL, str(path), False)])
     hass.http.register_view(NXControlImageView(hass))
     add_extra_js_url(hass, f"{CARD_URL}?v={version}")
 
