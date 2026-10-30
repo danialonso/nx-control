@@ -3,7 +3,7 @@
 All notable changes to NX Control. Each release on the
 [Releases](https://github.com/danialonso/nx-control/releases) page shows the notes of its version.
 
-## [0.2.5] - unreleased
+## [0.2.5] - 2026-10-30
 
 ### Added
 - **Phone notifications for time requests**, built in: choose one or more phones in

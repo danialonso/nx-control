@@ -110,7 +110,7 @@ Spotted a wrong translation, or want to add your language? See
 | Atmosphère | Status |
 |---|---|
 | 1.11.x | ✅ Tested |
-| 1.12.x | ⚠️ Should work, not tested yet |
+| 1.12.x | ✅ Tested |
 
 Tested it on another version? Tell us in an [issue](https://github.com/danialonso/nx-control/issues)
 so we can update the table. More in **[Compatibility](https://github.com/danialonso/nx-control/wiki/Compatibility)**.
