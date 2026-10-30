@@ -28,6 +28,34 @@
           "host": "Anfitrião",
           "port": "Porta"
         }
+      },
+      "notifications": {
+        "title": "Avisos no telemóvel",
+        "description": "Quando alguém pedir mais tempo de jogo na consola, os telemóveis escolhidos recebem um aviso com os botões **Aprovar** e **Recusar**. Ao tocar nele abre-se o NX Control.\n\nCada pessoa deve entrar na app Home Assistant com o seu próprio utilizador, para que os outros saibam quem respondeu.",
+        "data": {
+          "notify_devices": "Telemóveis",
+          "notify_results": "Avisar os outros quando alguém responder",
+          "notify_test": "Enviar agora um aviso de teste"
+        }
+      },
+      "notifications_none": {
+        "title": "Avisos no telemóvel",
+        "description": "O NX Control pode enviar-lhe um aviso quando alguém pedir mais tempo de jogo, com os botões **Aprovar** e **Recusar**.\n\nNão foi encontrado nenhum telemóvel com a **app Home Assistant**. Instale-a e inicie sessão, e depois escolha os seus telemóveis em **NX Control → Configurar**. Por agora pode continuar."
+      },
+      "notifications_test": {
+        "title": "O aviso chegou?",
+        "description": "Foi enviado um aviso de teste aos telemóveis escolhidos. Se não chegou, verifique no telemóvel se as notificações estão permitidas para a app Home Assistant.",
+        "menu_options": {
+          "sidebar": "Sim, continuar",
+          "notifications": "Não, voltar atrás"
+        }
+      },
+      "sidebar": {
+        "title": "Página do NX Control",
+        "description": "O NX Control adiciona uma página à barra lateral, com o ícone da família. Mostra cada jogador: tempo restante, tempo jogado hoje, o jogo em curso e os relatórios, e permite dar tempo extra, bloquear por hoje e responder a pedidos a partir de qualquer telemóvel ou navegador. Todos os utilizadores a podem ver.",
+        "data": {
+          "sidebar": "Mostrar o NX Control na barra lateral"
+        }
       }
     },
     "error": {
@@ -41,6 +69,27 @@
       "cannot_connect": "Não é possível ligar à consola.",
       "not_supported": "Dispositivo não suportado.",
       "reconfigure_successful": "O endereço da consola foi atualizado."
+    },
+    "create_entry": {
+      "done": "**{name}** está pronto.\n\n- **Página do NX Control:** {page} (na barra lateral)\n- **Telemóveis com avisos:** {phones}\n- **Cartão para painéis:** também pode adicionar o NX Control a qualquer painel: *Editar painel → Adicionar cartão →* procure **NX Control**.\n\nPode alterar tudo isto em **NX Control → Configurar**. Guia: {wiki}"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Definições do NX Control",
+        "description": "**Página do NX Control** na barra lateral, e **telemóveis** que recebem um aviso quando alguém pede mais tempo de jogo, com os botões Aprovar e Recusar. Os telemóveis precisam da app Home Assistant, e cada pessoa deve entrar com o seu próprio utilizador para que os outros saibam quem respondeu.",
+        "data": {
+          "sidebar": "Mostrar o NX Control na barra lateral (o cartão em ecrã inteiro, para todos os utilizadores)",
+          "notify_devices": "Telemóveis",
+          "notify_results": "Avisar os outros quando alguém responder",
+          "notify_test": "Enviar um aviso de teste ao guardar",
+          "notify_open": "Página aberta ao tocar na notificação (vazio: a vista do painel com o cartão NX Control, agora {found})"
+        }
+      }
+    },
+    "abort": {
+      "no_phones": "Não foram encontrados telemóveis. Instale primeiro a app Home Assistant no telemóvel e inicie sessão."
     }
   },
   "entity": {
@@ -179,6 +228,11 @@
           "description": "Só é necessário com várias consolas."
         }
       }
+    }
+  },
+  "exceptions": {
+    "already_answered": {
+      "message": "Este pedido de tempo já tinha sido respondido."
     }
   }
 }

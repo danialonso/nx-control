@@ -28,6 +28,34 @@
           "host": "Host",
           "port": "Port"
         }
+      },
+      "notifications": {
+        "title": "Phone notifications",
+        "description": "When someone asks for more play time on the console, the phones you choose get a notification with **Approve** and **Deny** buttons. Tapping it opens NX Control.\n\nEach person should sign in to the Home Assistant app with their own user, so the others can be told who answered.",
+        "data": {
+          "notify_devices": "Phones",
+          "notify_results": "Tell the others when someone answers",
+          "notify_test": "Send a test notification now"
+        }
+      },
+      "notifications_none": {
+        "title": "Phone notifications",
+        "description": "NX Control can send a notification to your phone when someone asks for more play time, with **Approve** and **Deny** buttons.\n\nNo phone with the **Home Assistant app** was found. Install it and sign in, then choose your phones in **NX Control → Configure**. You can go on for now."
+      },
+      "notifications_test": {
+        "title": "Did the notification arrive?",
+        "description": "A test notification was sent to the chosen phones. If it did not arrive, check that notifications are allowed for the Home Assistant app on the phone.",
+        "menu_options": {
+          "sidebar": "Yes, continue",
+          "notifications": "No, go back"
+        }
+      },
+      "sidebar": {
+        "title": "NX Control page",
+        "description": "NX Control adds a page to the sidebar, with the family icon. It shows each player: time left, time played today, the game being played and the reports, and lets you give extra time, block for today and answer time requests from any phone or browser. Every user can see it.",
+        "data": {
+          "sidebar": "Show NX Control in the sidebar"
+        }
       }
     },
     "error": {
@@ -41,6 +69,27 @@
       "cannot_connect": "Cannot connect to the console.",
       "not_supported": "Unsupported device.",
       "reconfigure_successful": "The console address was updated."
+    },
+    "create_entry": {
+      "done": "**{name}** is ready.\n\n- **NX Control page:** {page} (in the sidebar)\n- **Phones with notifications:** {phones}\n- **Dashboard card:** you can also add NX Control to any dashboard: *Edit dashboard → Add card →* search for **NX Control**.\n\nYou can change all this in **NX Control → Configure**. Guide: {wiki}"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "NX Control settings",
+        "description": "**NX Control page** in the sidebar, and **phones** that get a notification when someone asks for more play time, with Approve and Deny buttons. Phones need the Home Assistant app, and each person should sign in with their own user so the others are told who answered.",
+        "data": {
+          "sidebar": "Show NX Control in the sidebar (the card, full screen, for every user)",
+          "notify_devices": "Phones",
+          "notify_results": "Tell the others when someone answers",
+          "notify_test": "Send a test notification when saving",
+          "notify_open": "Page opened when tapping the notification (empty: the dashboard view with the NX Control card, now {found})"
+        }
+      }
+    },
+    "abort": {
+      "no_phones": "No phones found. Install the Home Assistant app on your phone and sign in first."
     }
   },
   "entity": {
@@ -179,6 +228,11 @@
           "description": "Only needed with several consoles."
         }
       }
+    }
+  },
+  "exceptions": {
+    "already_answered": {
+      "message": "This time request was already answered."
     }
   }
 }

@@ -28,6 +28,34 @@
           "host": "Hôte",
           "port": "Port"
         }
+      },
+      "notifications": {
+        "title": "Notifications sur le téléphone",
+        "description": "Quand quelqu'un demande plus de temps de jeu sur la console, les téléphones choisis reçoivent une notification avec les boutons **Accepter** et **Refuser**. La toucher ouvre NX Control.\n\nChaque personne doit se connecter à l'application Home Assistant avec son propre utilisateur, pour que les autres sachent qui a répondu.",
+        "data": {
+          "notify_devices": "Téléphones",
+          "notify_results": "Prévenir les autres quand quelqu'un répond",
+          "notify_test": "Envoyer une notification de test maintenant"
+        }
+      },
+      "notifications_none": {
+        "title": "Notifications sur le téléphone",
+        "description": "NX Control peut vous envoyer une notification quand quelqu'un demande plus de temps de jeu, avec les boutons **Accepter** et **Refuser**.\n\nAucun téléphone avec l'**application Home Assistant** n'a été trouvé. Installez-la et connectez-vous, puis choisissez vos téléphones dans **NX Control → Configurer**. Vous pouvez continuer pour l'instant."
+      },
+      "notifications_test": {
+        "title": "La notification est-elle arrivée ?",
+        "description": "Une notification de test a été envoyée aux téléphones choisis. Si elle n'est pas arrivée, vérifiez sur le téléphone que les notifications sont autorisées pour l'application Home Assistant.",
+        "menu_options": {
+          "sidebar": "Oui, continuer",
+          "notifications": "Non, revenir"
+        }
+      },
+      "sidebar": {
+        "title": "Page NX Control",
+        "description": "NX Control ajoute une page à la barre latérale, avec l'icône de la famille. Elle montre chaque joueur : temps restant, temps joué aujourd'hui, le jeu en cours et les rapports, et permet d'accorder du temps, de bloquer pour aujourd'hui et de répondre aux demandes depuis n'importe quel téléphone ou navigateur. Tous les utilisateurs peuvent la voir.",
+        "data": {
+          "sidebar": "Afficher NX Control dans la barre latérale"
+        }
       }
     },
     "error": {
@@ -41,6 +69,27 @@
       "cannot_connect": "Impossible de se connecter à la console.",
       "not_supported": "Appareil non pris en charge.",
       "reconfigure_successful": "L'adresse de la console a été mise à jour."
+    },
+    "create_entry": {
+      "done": "**{name}** est prêt.\n\n- **Page NX Control :** {page} (dans la barre latérale)\n- **Téléphones avec notifications :** {phones}\n- **Carte pour les tableaux de bord :** vous pouvez aussi ajouter NX Control à n'importe quel tableau de bord : *Modifier le tableau de bord → Ajouter une carte →* cherchez **NX Control**.\n\nVous pouvez modifier tout cela dans **NX Control → Configurer**. Guide : {wiki}"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Réglages de NX Control",
+        "description": "**Page NX Control** dans la barre latérale, et **téléphones** qui reçoivent une notification quand quelqu'un demande plus de temps de jeu, avec les boutons Accepter et Refuser. Les téléphones ont besoin de l'application Home Assistant, et chaque personne doit se connecter avec son propre utilisateur pour que les autres sachent qui a répondu.",
+        "data": {
+          "sidebar": "Afficher NX Control dans la barre latérale (la carte en plein écran, pour tous les utilisateurs)",
+          "notify_devices": "Téléphones",
+          "notify_results": "Prévenir les autres quand quelqu'un répond",
+          "notify_test": "Envoyer une notification de test en enregistrant",
+          "notify_open": "Page ouverte en touchant la notification (vide : la vue du tableau de bord avec la carte NX Control, actuellement {found})"
+        }
+      }
+    },
+    "abort": {
+      "no_phones": "Aucun téléphone trouvé. Installez d'abord l'application Home Assistant sur votre téléphone et connectez-vous."
     }
   },
   "entity": {
@@ -179,6 +228,11 @@
           "description": "Nécessaire uniquement avec plusieurs consoles."
         }
       }
+    }
+  },
+  "exceptions": {
+    "already_answered": {
+      "message": "Cette demande de temps a déjà reçu une réponse."
     }
   }
 }

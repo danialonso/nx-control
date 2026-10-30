@@ -1,6 +1,7 @@
 """Data coordinator for NX Control."""
 from __future__ import annotations
 
+import calendar
 from datetime import date, timedelta
 import logging
 from typing import Any
@@ -36,6 +37,8 @@ class NXControlCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL, config_entry=entry)
         self.client = client
         self._known_requests: set[str] = set()
+        from .notify import NXControlNotifier
+        self.notifier = NXControlNotifier(hass, entry, self)
         self._playing: dict[str, bool] | None = None  # None until the first update
         self._store: Store = Store(hass, 1, f"{DOMAIN}.{entry.entry_id}")
         self._cache: dict[str, Any] | None = None
@@ -66,10 +69,12 @@ class NXControlCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise UpdateFailed(str(err)) from err
 
         current = set()
+        new_requests = []
         for req in requests:
             req_id = str(req.get("id"))
             current.add(req_id)
             if req_id not in self._known_requests:
+                new_requests.append(req)
                 self.hass.bus.async_fire(EVENT_TIME_REQUEST, {
                     "request_id": req_id,
                     "profile_id": req.get("profile_id"),
@@ -78,6 +83,12 @@ class NXControlCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     "message": req.get("message", ""),
                     "console_id": self.config_entry.unique_id,
                 })
+        # Phone notifications: new requests, and requests answered since the last update
+        all_requests = {str(r.get("id")): r for r in status.get("requests") or [] if isinstance(r, dict)}
+        for req in new_requests:
+            await self.notifier.async_new_request(req, self.profile_name(req.get("profile_id"), status))
+        for req_id in self._known_requests - current:
+            await self.notifier.async_resolved(all_requests.get(req_id), req_id)
         self._known_requests = current
         self._fire_session_events(status)
         status["requests"] = requests
@@ -112,9 +123,68 @@ class NXControlCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         data["requests"] = []
         data["online"] = False
         data["usage"] = self._usage
+        self._start_new_day(data)
         if self._playing:
             self._fire_session_events(data)   # "stopped playing" when the console goes off
         return data
+
+    @staticmethod
+    def _start_new_day(data: dict[str, Any]) -> None:
+        """Console off since an earlier day: show today as the console would when it turns on.
+
+        Played time and extra time go back to zero, today's limit and allowed hours come from the
+        weekly schedule the console sent, "blocked for today" and "no limits until 0:00" end at
+        midnight, and the console lock stays. The console's own data replaces this when it is back.
+        """
+        snapshot_day = str(data.get("updated_at") or "")[:10]
+        now = dt_util.now()
+        if len(snapshot_day) != 10 or snapshot_day >= now.date().isoformat():
+            return
+        # The console counts in local wall-clock seconds (its clock as if it were UTC)
+        wall = calendar.timegm(now.replace(tzinfo=None).timetuple())
+        weekday = now.weekday()                     # 0 = Monday, like the console
+        minute = now.hour * 60 + now.minute
+
+        console = dict(data.get("console") or {})
+        console["paused"] = False
+        console["paused_until"] = 0
+        data["console"] = console
+        locked = bool(console.get("locked"))
+
+        profiles = []
+        for p in data.get("profiles", []):
+            q = {k: v for k, v in p.items() if not k.startswith("game_")}
+            q["used_today"] = 0
+            schedule = p.get("schedule")
+            if isinstance(schedule, dict):
+                days = schedule.get("daily_minutes") or []
+                minutes = days[weekday] if len(days) == 7 and isinstance(days[weekday], int) else -1
+                limit = minutes * 60 if minutes >= 0 else -1
+                remaining = limit
+                in_window, window_ends = True, -1
+                windows = [w for w in schedule.get("windows") or [] if isinstance(w, dict)]
+                if windows:
+                    in_window = False
+                    for w in windows:
+                        if not int(w.get("days", 0x7F)) & (1 << weekday):
+                            continue
+                        start, end = int(w.get("from", 0)), int(w.get("to", 24 * 60))
+                        if start <= minute < end:
+                            in_window = True
+                            ends = (end - minute) * 60 - now.second
+                            window_ends = max(window_ends, ends)
+                if window_ends >= 0 and (remaining < 0 or window_ends < remaining):
+                    remaining = window_ends
+                q["limit_today"], q["remaining_today"], q["in_allowed_window"] = limit, remaining, in_window
+            elif p.get("limit_today") not in (None, -1):
+                # Console without the weekly schedule (older version): today's limit is not known
+                q["limit_today"] = q["remaining_today"] = None
+            profile_blocked = int(p.get("blocked_until") or 0) > wall
+            q["profile_blocked"] = profile_blocked
+            q["blocked"] = locked or profile_blocked
+            profiles.append(q)
+        data["profiles"] = profiles
+        data["new_day"] = True
 
     def _fire_session_events(self, status: dict[str, Any]) -> None:
         """Fire an event when a profile starts or stops playing."""

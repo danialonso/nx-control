@@ -5,6 +5,12 @@ DOMAIN = "nx_control"
 DEFAULT_PORT = 8460
 CONF_TOKEN = "token"
 CONF_CONSOLE_ID = "console_id"
+CONF_NOTIFY_DEVICES = "notify_devices"
+CONF_NOTIFY_RESULTS = "notify_results"
+CONF_SIDEBAR = "sidebar"                  # NX Control page in the sidebar (default on)
+PANEL_URL = "nx-control"                  # /nx-control
+CONF_NOTIFY_TEST = "notify_test"          # send a test notification (not stored)
+CONF_NOTIFY_OPEN = "notify_open"          # page opened when tapping a notification
 SCAN_INTERVAL = timedelta(seconds=10)
 
 EVENT_TIME_REQUEST = "nx_control_time_request"

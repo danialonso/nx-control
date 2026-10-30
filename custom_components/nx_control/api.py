@@ -23,6 +23,10 @@ class NXControlRateLimitError(NXControlError):
     """Too many wrong pairing codes."""
 
 
+class NXControlConflictError(NXControlError):
+    """The request was already answered (by someone else, or from the console)."""
+
+
 class NXControlClient:
     """Small wrapper around the REST API (see docs/api.md)."""
 
@@ -51,6 +55,8 @@ class NXControlClient:
             raise NXControlRateLimitError(await resp.text())
         if resp.status in (401, 403):
             raise NXControlAuthError(await resp.text())
+        if resp.status == 409:
+            raise NXControlConflictError(await resp.text())
         if resp.status >= 400:
             raise NXControlError(f"{resp.status}: {await resp.text()}")
         if resp.content_type == "application/json":

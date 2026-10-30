@@ -5,7 +5,11 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
+from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResult, OptionsFlow
+from homeassistant.core import callback
+from homeassistant.helpers.selector import (
+    BooleanSelector, SelectOptionDict, SelectSelector, SelectSelectorConfig, SelectSelectorMode, TextSelector,
+)
 from homeassistant.const import CONF_HOST, CONF_PORT
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -15,7 +19,18 @@ except ImportError:  # Home Assistant < 2025.2
     from homeassistant.components.zeroconf import ZeroconfServiceInfo
 
 from .api import NXControlAuthError, NXControlClient, NXControlError, NXControlRateLimitError
-from .const import CONF_TOKEN, DEFAULT_PORT, DOMAIN
+from .const import (
+    CONF_NOTIFY_DEVICES, CONF_NOTIFY_OPEN, CONF_NOTIFY_RESULTS, CONF_NOTIFY_TEST, CONF_SIDEBAR, CONF_TOKEN,
+    DEFAULT_PORT, DOMAIN, PANEL_URL,
+)
+
+WIKI = "https://github.com/danialonso/nx-control/wiki"
+
+
+def _phones_selector(options: list[dict[str, str]]) -> SelectSelector:
+    return SelectSelector(SelectSelectorConfig(
+        options=[SelectOptionDict(value=o["value"], label=o["label"]) for o in options],
+        multiple=True, mode=SelectSelectorMode.LIST))
 
 
 class NXControlConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -23,10 +38,17 @@ class NXControlConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
+        return NXControlOptionsFlow()
+
     def __init__(self) -> None:
         self._host: str | None = None
         self._port: int = DEFAULT_PORT
         self._info: dict[str, Any] = {}
+        self._token: str | None = None
+        self._options: dict[str, Any] = {CONF_NOTIFY_DEVICES: [], CONF_NOTIFY_RESULTS: True, CONF_SIDEBAR: True}
 
     def _client(self) -> NXControlClient:
         return NXControlClient(async_get_clientsession(self.hass), self._host, self._port)
@@ -117,10 +139,8 @@ class NXControlConfigFlow(ConfigFlow, domain=DOMAIN):
             except NXControlError:
                 errors["base"] = "cannot_connect"
             else:
-                return self.async_create_entry(
-                    title=self._title(),
-                    data={CONF_HOST: self._host, CONF_PORT: self._port, CONF_TOKEN: token},
-                )
+                self._token = token
+                return await self.async_step_notifications()
         return self.async_show_form(
             step_id="pair",
             data_schema=vol.Schema({vol.Required("code"): str}),
@@ -128,5 +148,97 @@ class NXControlConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
+    # ---------------------------------------------------------------- guided setup after pairing
+    async def async_step_notifications(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """Step 3: which phones get the time requests (with Approve / Deny)."""
+        from .notify import async_phone_options, async_send_test
+        options = await async_phone_options(self.hass, self._options[CONF_NOTIFY_DEVICES])
+        if user_input is not None:
+            self._options[CONF_NOTIFY_DEVICES] = user_input.get(CONF_NOTIFY_DEVICES, [])
+            self._options[CONF_NOTIFY_RESULTS] = user_input.get(CONF_NOTIFY_RESULTS, True)
+            if user_input.get(CONF_NOTIFY_TEST) and self._options[CONF_NOTIFY_DEVICES]:
+                await async_send_test(self.hass, self._options[CONF_NOTIFY_DEVICES], self._options)
+                return await self.async_step_notifications_test()
+            return await self.async_step_sidebar()
+        if not options:
+            # No phone with the Home Assistant app yet: explain and go on
+            return self.async_show_form(step_id="notifications_none", data_schema=vol.Schema({}))
+        return self.async_show_form(
+            step_id="notifications",
+            data_schema=vol.Schema({
+                vol.Optional(CONF_NOTIFY_DEVICES, default=self._options[CONF_NOTIFY_DEVICES]): _phones_selector(options),
+                vol.Optional(CONF_NOTIFY_RESULTS, default=self._options[CONF_NOTIFY_RESULTS]): BooleanSelector(),
+                vol.Optional(CONF_NOTIFY_TEST, default=True): BooleanSelector(),
+            }),
+        )
+
+    async def async_step_notifications_none(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        return await self.async_step_sidebar()
+
+    async def async_step_notifications_test(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """The test notification was sent: did it arrive?"""
+        return self.async_show_menu(step_id="notifications_test", menu_options=["sidebar", "notifications"])
+
+    async def async_step_sidebar(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """Step 4: the NX Control page in the sidebar (skipped if another console already shows it)."""
+        if user_input is not None:
+            self._options[CONF_SIDEBAR] = user_input.get(CONF_SIDEBAR, True)
+            return self._finish()
+        if self.hass.data.get(DOMAIN, {}).get("panel"):
+            return self._finish()
+        return self.async_show_form(
+            step_id="sidebar",
+            data_schema=vol.Schema({vol.Optional(CONF_SIDEBAR, default=True): BooleanSelector()}),
+        )
+
+    def _finish(self) -> ConfigFlowResult:
+        """Create the entry; the success dialog sums up what was set up and explains the card."""
+        phones = len(self._options[CONF_NOTIFY_DEVICES])
+        sidebar = self._options[CONF_SIDEBAR] or bool(self.hass.data.get(DOMAIN, {}).get("panel"))
+        return self.async_create_entry(
+            title=self._title(),
+            data={CONF_HOST: self._host, CONF_PORT: self._port, CONF_TOKEN: self._token},
+            options=dict(self._options),
+            description="done",
+            description_placeholders={
+                "name": self._title(),
+                "phones": str(phones),
+                "page": f"/{PANEL_URL}" if sidebar else "-",
+                "wiki": WIKI,
+            },
+        )
+
     def _title(self) -> str:
         return self._info.get("console_name") or "Nintendo Switch"
+
+
+class NXControlOptionsFlow(OptionsFlow):
+    """Sidebar page and phone notifications (the same choices as during setup)."""
+
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        from .notify import async_find_card_page, async_phone_options, async_send_test
+        if user_input is not None:
+            test = user_input.pop(CONF_NOTIFY_TEST, False)
+            if test and user_input.get(CONF_NOTIFY_DEVICES):
+                await async_send_test(self.hass, user_input[CONF_NOTIFY_DEVICES], user_input)
+            return self.async_create_entry(data=user_input)
+
+        current = list(self.config_entry.options.get(CONF_NOTIFY_DEVICES, []))
+        options = await async_phone_options(self.hass, current)
+        found_page = f"/{PANEL_URL}" if self.hass.data.get(DOMAIN, {}).get("panel") \
+            else await async_find_card_page(self.hass)
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema({
+                vol.Optional(CONF_SIDEBAR,
+                             default=self.config_entry.options.get(CONF_SIDEBAR, True)): BooleanSelector(),
+                vol.Optional(CONF_NOTIFY_DEVICES, default=current): _phones_selector(options),
+                vol.Optional(CONF_NOTIFY_RESULTS,
+                             default=self.config_entry.options.get(CONF_NOTIFY_RESULTS, True)): BooleanSelector(),
+                vol.Optional(CONF_NOTIFY_TEST, default=False): BooleanSelector(),
+                vol.Optional(CONF_NOTIFY_OPEN,
+                             description={"suggested_value": self.config_entry.options.get(CONF_NOTIFY_OPEN, "")}): TextSelector(),
+            }),
+            description_placeholders={"found": found_page or "-"},
+        )

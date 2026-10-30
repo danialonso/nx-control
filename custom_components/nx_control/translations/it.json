@@ -28,6 +28,34 @@
           "host": "Host",
           "port": "Porta"
         }
+      },
+      "notifications": {
+        "title": "Notifiche sul telefono",
+        "description": "Quando qualcuno chiede più tempo di gioco sulla console, i telefoni scelti ricevono una notifica con i pulsanti **Approva** e **Rifiuta**. Toccandola si apre NX Control.\n\nOgni persona deve accedere all'app Home Assistant con il proprio utente, così gli altri sapranno chi ha risposto.",
+        "data": {
+          "notify_devices": "Telefoni",
+          "notify_results": "Avvisa gli altri quando qualcuno risponde",
+          "notify_test": "Invia ora una notifica di prova"
+        }
+      },
+      "notifications_none": {
+        "title": "Notifiche sul telefono",
+        "description": "NX Control può inviarti una notifica quando qualcuno chiede più tempo di gioco, con i pulsanti **Approva** e **Rifiuta**.\n\nNon è stato trovato nessun telefono con l'**app Home Assistant**. Installala e accedi, poi scegli i tuoi telefoni in **NX Control → Configura**. Per ora puoi continuare."
+      },
+      "notifications_test": {
+        "title": "La notifica è arrivata?",
+        "description": "È stata inviata una notifica di prova ai telefoni scelti. Se non è arrivata, controlla sul telefono che le notifiche siano consentite per l'app Home Assistant.",
+        "menu_options": {
+          "sidebar": "Sì, continua",
+          "notifications": "No, torna indietro"
+        }
+      },
+      "sidebar": {
+        "title": "Pagina NX Control",
+        "description": "NX Control aggiunge una pagina alla barra laterale, con l'icona della famiglia. Mostra ogni giocatore: tempo rimanente, tempo giocato oggi, il gioco in corso e i resoconti, e permette di concedere tempo, bloccare per oggi e rispondere alle richieste da qualsiasi telefono o browser. Tutti gli utenti possono vederla.",
+        "data": {
+          "sidebar": "Mostra NX Control nella barra laterale"
+        }
       }
     },
     "error": {
@@ -41,6 +69,27 @@
       "cannot_connect": "Impossibile connettersi alla console.",
       "not_supported": "Dispositivo non supportato.",
       "reconfigure_successful": "L'indirizzo della console è stato aggiornato."
+    },
+    "create_entry": {
+      "done": "**{name}** è pronto.\n\n- **Pagina NX Control:** {page} (nella barra laterale)\n- **Telefoni con notifiche:** {phones}\n- **Scheda per le dashboard:** puoi anche aggiungere NX Control a qualsiasi dashboard: *Modifica dashboard → Aggiungi scheda →* cerca **NX Control**.\n\nPuoi cambiare tutto questo in **NX Control → Configura**. Guida: {wiki}"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Impostazioni di NX Control",
+        "description": "**Pagina NX Control** nella barra laterale e **telefoni** che ricevono una notifica quando qualcuno chiede più tempo di gioco, con i pulsanti Approva e Rifiuta. I telefoni hanno bisogno dell'app Home Assistant, e ogni persona deve accedere con il proprio utente così gli altri sapranno chi ha risposto.",
+        "data": {
+          "sidebar": "Mostra NX Control nella barra laterale (la scheda a schermo intero, per tutti gli utenti)",
+          "notify_devices": "Telefoni",
+          "notify_results": "Avvisa gli altri quando qualcuno risponde",
+          "notify_test": "Invia una notifica di prova al salvataggio",
+          "notify_open": "Pagina aperta toccando la notifica (vuoto: la vista della dashboard con la scheda NX Control, ora {found})"
+        }
+      }
+    },
+    "abort": {
+      "no_phones": "Nessun telefono trovato. Installa prima l'app Home Assistant sul telefono e accedi."
     }
   },
   "entity": {
@@ -179,6 +228,11 @@
           "description": "Necessario solo con più console."
         }
       }
+    }
+  },
+  "exceptions": {
+    "already_answered": {
+      "message": "A questa richiesta di tempo è già stata data una risposta."
     }
   }
 }

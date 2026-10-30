@@ -28,6 +28,34 @@
           "host": "Host",
           "port": "Port"
         }
+      },
+      "notifications": {
+        "title": "Benachrichtigungen auf dem Handy",
+        "description": "Wenn jemand an der Konsole um mehr Spielzeit bittet, erhalten die gewählten Handys eine Benachrichtigung mit den Schaltflächen **Genehmigen** und **Ablehnen**. Ein Tippen darauf öffnet NX Control.\n\nJede Person sollte sich in der Home Assistant App mit einem eigenen Benutzer anmelden, damit die anderen erfahren, wer geantwortet hat.",
+        "data": {
+          "notify_devices": "Handys",
+          "notify_results": "Die anderen informieren, wenn jemand antwortet",
+          "notify_test": "Jetzt eine Testbenachrichtigung senden"
+        }
+      },
+      "notifications_none": {
+        "title": "Benachrichtigungen auf dem Handy",
+        "description": "NX Control kann dir eine Benachrichtigung senden, wenn jemand um mehr Spielzeit bittet, mit den Schaltflächen **Genehmigen** und **Ablehnen**.\n\nEs wurde kein Handy mit der **Home Assistant App** gefunden. Installiere sie und melde dich an, dann wähle deine Handys unter **NX Control → Konfigurieren**. Du kannst vorerst fortfahren."
+      },
+      "notifications_test": {
+        "title": "Ist die Benachrichtigung angekommen?",
+        "description": "An die gewählten Handys wurde eine Testbenachrichtigung gesendet. Falls sie nicht angekommen ist, prüfe am Handy, ob Benachrichtigungen für die Home Assistant App erlaubt sind.",
+        "menu_options": {
+          "sidebar": "Ja, weiter",
+          "notifications": "Nein, zurück"
+        }
+      },
+      "sidebar": {
+        "title": "NX Control-Seite",
+        "description": "NX Control fügt der Seitenleiste eine Seite mit dem Familien-Symbol hinzu. Sie zeigt jeden Spieler: verbleibende Zeit, heute gespielte Zeit, das aktuelle Spiel und die Berichte, und damit kannst du von jedem Handy oder Browser aus Zeit gewähren, für heute sperren und Zeitanfragen beantworten. Alle Benutzer können sie sehen.",
+        "data": {
+          "sidebar": "NX Control in der Seitenleiste anzeigen"
+        }
       }
     },
     "error": {
@@ -41,6 +69,27 @@
       "cannot_connect": "Keine Verbindung zur Konsole möglich.",
       "not_supported": "Nicht unterstütztes Gerät.",
       "reconfigure_successful": "Die Adresse der Konsole wurde aktualisiert."
+    },
+    "create_entry": {
+      "done": "**{name}** ist bereit.\n\n- **NX Control-Seite:** {page} (in der Seitenleiste)\n- **Handys mit Benachrichtigungen:** {phones}\n- **Karte für Dashboards:** Du kannst NX Control auch zu jedem Dashboard hinzufügen: *Dashboard bearbeiten → Karte hinzufügen →* suche nach **NX Control**.\n\nDas alles kannst du unter **NX Control → Konfigurieren** ändern. Anleitung: {wiki}"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "NX Control-Einstellungen",
+        "description": "**NX Control-Seite** in der Seitenleiste und **Handys**, die eine Benachrichtigung erhalten, wenn jemand um mehr Spielzeit bittet, mit den Schaltflächen Genehmigen und Ablehnen. Die Handys brauchen die Home Assistant App, und jede Person sollte sich mit einem eigenen Benutzer anmelden, damit die anderen erfahren, wer geantwortet hat.",
+        "data": {
+          "sidebar": "NX Control in der Seitenleiste anzeigen (die Karte im Vollbild, für alle Benutzer)",
+          "notify_devices": "Handys",
+          "notify_results": "Die anderen informieren, wenn jemand antwortet",
+          "notify_test": "Beim Speichern eine Testbenachrichtigung senden",
+          "notify_open": "Seite beim Antippen der Benachrichtigung (leer: die Dashboard-Ansicht mit der NX Control-Karte, derzeit {found})"
+        }
+      }
+    },
+    "abort": {
+      "no_phones": "Keine Handys gefunden. Installiere zuerst die Home Assistant App auf deinem Handy und melde dich an."
     }
   },
   "entity": {
@@ -179,6 +228,11 @@
           "description": "Nur bei mehreren Konsolen nötig."
         }
       }
+    }
+  },
+  "exceptions": {
+    "already_answered": {
+      "message": "Diese Zeitanfrage wurde bereits beantwortet."
     }
   }
 }

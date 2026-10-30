@@ -28,6 +28,34 @@
           "host": "Host",
           "port": "Puerto"
         }
+      },
+      "notifications": {
+        "title": "Avisos en el móvil",
+        "description": "Cuando alguien pida más tiempo de juego en la consola, los móviles que elijas recibirán un aviso con los botones **Aprobar** y **Rechazar**. Al tocarlo se abre NX Control.\n\nCada persona debe entrar en la app de Home Assistant con su propio usuario, para que a los demás se les diga quién ha respondido.",
+        "data": {
+          "notify_devices": "Móviles",
+          "notify_results": "Avisar a los demás cuando alguien responda",
+          "notify_test": "Enviar ahora un aviso de prueba"
+        }
+      },
+      "notifications_none": {
+        "title": "Avisos en el móvil",
+        "description": "NX Control puede enviarte un aviso al móvil cuando alguien pida más tiempo de juego, con los botones **Aprobar** y **Rechazar**.\n\nNo se ha encontrado ningún móvil con la **app de Home Assistant**. Instálala e inicia sesión, y después elige tus móviles en **NX Control → Configurar**. De momento puedes continuar."
+      },
+      "notifications_test": {
+        "title": "¿Ha llegado el aviso?",
+        "description": "Se ha enviado un aviso de prueba a los móviles elegidos. Si no ha llegado, comprueba en el móvil que la app de Home Assistant tiene permitidas las notificaciones.",
+        "menu_options": {
+          "sidebar": "Sí, continuar",
+          "notifications": "No, volver atrás"
+        }
+      },
+      "sidebar": {
+        "title": "Página de NX Control",
+        "description": "NX Control añade una página a la barra lateral, con el icono de la familia. Muestra a cada jugador: tiempo restante, tiempo jugado hoy, el juego al que está jugando y los informes, y permite dar tiempo extra, bloquear por hoy y responder solicitudes desde cualquier móvil o navegador. La pueden ver todos los usuarios.",
+        "data": {
+          "sidebar": "Mostrar NX Control en la barra lateral"
+        }
       }
     },
     "error": {
@@ -41,6 +69,27 @@
       "cannot_connect": "No se puede conectar con la consola.",
       "not_supported": "Dispositivo no compatible.",
       "reconfigure_successful": "Se ha actualizado la dirección de la consola."
+    },
+    "create_entry": {
+      "done": "**{name}** está listo.\n\n- **Página de NX Control:** {page} (en la barra lateral)\n- **Móviles con avisos:** {phones}\n- **Tarjeta para paneles:** también puedes añadir NX Control a cualquier panel: *Editar panel → Añadir tarjeta →* busca **NX Control**.\n\nPuedes cambiar todo esto en **NX Control → Configurar**. Guía: {wiki}"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Ajustes de NX Control",
+        "description": "**Página de NX Control** en la barra lateral, y **móviles** que reciben un aviso cuando alguien pide más tiempo de juego, con los botones Aprobar y Rechazar. Los móviles necesitan la app de Home Assistant, y cada persona debe entrar con su propio usuario para que a los demás se les diga quién ha respondido.",
+        "data": {
+          "sidebar": "Mostrar NX Control en la barra lateral (la tarjeta a pantalla completa, para todos los usuarios)",
+          "notify_devices": "Móviles",
+          "notify_results": "Avisar a los demás cuando alguien responda",
+          "notify_test": "Enviar un aviso de prueba al guardar",
+          "notify_open": "Página que se abre al tocar la notificación (vacío: la vista del panel con la tarjeta de NX Control, ahora {found})"
+        }
+      }
+    },
+    "abort": {
+      "no_phones": "No se han encontrado móviles. Instala primero la app de Home Assistant en tu móvil e inicia sesión."
     }
   },
   "entity": {
@@ -179,6 +228,11 @@
           "description": "Solo necesario con varias consolas."
         }
       }
+    }
+  },
+  "exceptions": {
+    "already_answered": {
+      "message": "Esta solicitud de tiempo ya estaba respondida."
     }
   }
 }

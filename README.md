@@ -101,9 +101,9 @@ Spotted a wrong translation, or want to add your language? See
 
 | Console firmware | Status |
 |---|---|
+| 23.x | ✅ Tested |
 | 22.x | ✅ Tested |
 | 21.x | ✅ Tested |
-| 23.x | ⚠️ Should work, not tested yet |
 | 20.x · 19.x · 18.x | ⚠️ Should work, not tested yet |
 | Before 17.x | ❓ Not tested |
 
@@ -114,6 +114,10 @@ Spotted a wrong translation, or want to add your language? See
 
 Tested it on another version? Tell us in an [issue](https://github.com/danialonso/nx-control/issues)
 so we can update the table. More in **[Compatibility](https://github.com/danialonso/nx-control/wiki/Compatibility)**.
+
+## What's new
+
+See the **[changelog](CHANGELOG.md)** for the changes in every version.
 
 ## Privacy
 
